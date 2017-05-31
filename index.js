@@ -37,6 +37,10 @@ Root.prototype._load = function () {
 
 Root.prototype._unload = function () {
   this._mregl.destroy()
+  for (var i = 0; i < this.components.length; i++) {
+    this.components[i]._setMregl(null)
+  }
+  this._mregl = null
 }
 
 function Component (opts) {
@@ -90,12 +94,12 @@ Component.prototype._render = function () {
     this.element.style.height = this.props.height + 'px'
     this._elheight = this.props.height
   }
-  this._parent = document.createElement('div')
   return this.element
 }
 
 Component.prototype._load = function () {
   var self = this
+  if (self._regl) return
   self._getMregl(function (mregl) {
     self._regl = mregl(self.element)
     self.regl.setRegl(self._regl)
@@ -103,5 +107,9 @@ Component.prototype._load = function () {
 }
 
 Component.prototype._unload = function () {
-  this.regl.destroy()
+  if (this._regl) {
+    this._regl.destroy()
+    this._regl = null
+    this.regl.setRegl(null)
+  }
 }
