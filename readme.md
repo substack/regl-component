@@ -12,6 +12,8 @@ all components.
 
 # example
 
+[view this demo](https://substack.neocities.org/example/regl-component.html)
+
 ``` js
 var app = require('choo')()
 var html = require('choo/html')
