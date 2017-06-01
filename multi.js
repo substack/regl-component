@@ -75,6 +75,18 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
       return boxDesc
     }
 
+    var scheduled = false
+    function schedule (cb) {
+      subcontext.callbacks.push(cb)
+      if (!scheduled) {
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(draw)
+        }
+        else setTimeout(draw, 0)
+      }
+      function draw () { regl.draw(frame) }
+    }
+
     function subREGL (options) {
       if ('viewport' in options) {
         options.viewport = wrapBox(options.viewport)
@@ -92,16 +104,23 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
         return function () {
           if (setRAF) return draw.apply(this, arguments)
           var args = arguments
-          subcontext.callbacks.push(function () {
+          schedule(function () {
             draw.apply(null, arguments)
           })
-          regl.draw(frame)
         }
       } else return draw
     }
 
     Object.keys(regl).forEach(function (option) {
-      subREGL[option] = regl[option]
+      if (option === 'clear') {
+        subREGL.clear = function () {
+          if (setRAF) return regl[option].apply(this, arguments)
+          var args = arguments
+          schedule(function () {
+            regl[option].apply(null, args)
+          })
+        }
+      } else subREGL[option] = regl[option]
     })
 
     subREGL.frame = function subFrame (cb) {

@@ -54,9 +54,7 @@ function fromMesh (rc, mesh) {
     },
     elements: mesh.cells
   })
-  rc.regl.frame(function () {
-    rc.regl.clear({ color: [0,0,0,1], depth: true })
-    draw()
-  })
+  rc.regl.clear({ color: [0,0,0,1], depth: true })
+  draw()
   return rc
 }
