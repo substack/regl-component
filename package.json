@@ -1,6 +1,6 @@
 {
   "name": "regl-component",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "element wrapper to manage multiple regl contexts",
   "dependencies": {
     "deferred-regl": "^1.0.0",
