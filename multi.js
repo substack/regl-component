@@ -24,11 +24,15 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
   function resize () {
     canvas.width = pixelRatio * window.innerWidth
     canvas.height = pixelRatio * window.innerHeight
+    if (!setRAF && regl) regl.draw(frame)
   }
 
   resize()
 
   window.addEventListener('resize', resize, false)
+  window.addEventListener('scroll', function () {
+    if (!setRAF) regl.draw(frame)
+  }, false)
 
   reglInput.canvas = canvas
   delete reglInput.gl
@@ -83,7 +87,17 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
           options.scissor.box = true
         }
       }
-      return regl.apply(regl, Array.prototype.slice.call(arguments))
+      var draw = regl.apply(regl, Array.prototype.slice.call(arguments))
+      if (!setRAF) {
+        return function () {
+          if (setRAF) return draw.apply(this, arguments)
+          var args = arguments
+          subcontext.callbacks.push(function () {
+            draw.apply(null, arguments)
+          })
+          regl.draw(frame)
+        }
+      } else return draw
     }
 
     Object.keys(regl).forEach(function (option) {
@@ -91,7 +105,9 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
     })
 
     subREGL.frame = function subFrame (cb) {
+      setRAF = true
       subcontext.callbacks.push(cb)
+      regl.frame(frame)
       return {
         cancel: function () {
           subcontext.callbacks.splice(subcontext.callbacks.indexOf(cb), 1)
@@ -134,7 +150,8 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
     }
   }
 
-  regl.frame(function (context) {
+  var setRAF = false
+  function frame (context) {
     regl.clear({
       color: [0, 0, 0, 0]
     })
@@ -165,7 +182,7 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
 
       sc.tick += 1
     }
-  })
+  }
 
   return createSubContext
 }
