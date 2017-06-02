@@ -11,7 +11,8 @@ var demos = [
   fromMesh(rcom.create(), chart('pO'))
 ]
 
-app.route('/', function (state, emit) {
+var baseRoute = window.location.pathname
+app.route(baseRoute + '/', function (state, emit) {
   return html`<body>
     ${rcom.render()}
     ${demos.map(function (demo) {
