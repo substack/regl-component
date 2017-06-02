@@ -10,7 +10,8 @@ shapes.forEach(function (shape) {
   demos[shape] = fromMesh(rcom.create(), chart(shape))
 })
 
-app.route('#', function (state, emit) {
+var baseRoute = window.location.pathname
+app.route(baseRoute, function (state, emit) {
   return html`<body>
     ${rcom.render()}
     ${shapes.map(function (shape) {
@@ -21,8 +22,9 @@ app.route('#', function (state, emit) {
       </div>`
     })}
   </body>`
+
 })
-app.route('#:shape', function (state, emit) {
+app.route(baseRoute + ':shape', function (state, emit) {
   var demo = demos[state.params.shape]
   if (!demo) return html`<body>not found</body>`
   return html`<body>
