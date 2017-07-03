@@ -105,7 +105,7 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
           if (setRAF) return draw.apply(this, arguments)
           var args = arguments
           schedule(function () {
-            draw.apply(null, arguments)
+            draw.apply(null, args)
           })
         }
       } else return draw
