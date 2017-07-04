@@ -71,12 +71,17 @@ Component.prototype = Object.create(Nano.prototype)
 
 Component.prototype._getMregl = function (fn) {
   if (this._mregl) fn(this._mregl)
-  else this._mreglqueue.push(fn)
+  else {
+    if (!this._mreglqueue) this._mreglqueue = []
+    this._mreglqueue.push(fn)
+  }
 }
 Component.prototype._setMregl = function (mr) {
   this._mregl = mr
-  for (var i = 0; i < this._mreglqueue.length; i++) {
-    this._mreglqueue[i](this._mregl)
+  if (this._mreglqueue) {
+    for (var i = 0; i < this._mreglqueue.length; i++) {
+      this._mreglqueue[i](this._mregl)
+    }
   }
   this._mreglqueue = null
 }
