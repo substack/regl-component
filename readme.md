@@ -83,9 +83,11 @@ function fromMesh (rc, mesh) {
 var reglComponent = require('regl-component')
 ```
 
-## var rcom = reglComponent(regl)
+## var rcom = reglComponent(createRegl, opts)
 
-Create an `rcom` component given a `regl` instance.
+Create an `rcom` component given a `createRegl` constructor function.
+
+Any `opts` are passed to the regl constructor.
 
 ## var rootElem = rcom.render()
 

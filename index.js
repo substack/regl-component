@@ -4,11 +4,12 @@ var mregl = require('./multi.js')
 
 module.exports = Root
 
-function Root (regl) {
-  if (!(this instanceof Root)) return new Root(regl)
+function Root (regl, opts) {
+  if (!(this instanceof Root)) return new Root(regl, opts)
   Nano.call(this)
   this.components = []
   this._regl = regl
+  this._opts = opts
 }
 Root.prototype = Object.create(Nano.prototype)
 
@@ -29,7 +30,7 @@ Root.prototype._render = function () {
 Root.prototype._update = function () { return false }
 
 Root.prototype._load = function () {
-  this._mregl = mregl(this._regl, this.element)
+  this._mregl = mregl(this._regl, this.element, this._opts)
   for (var i = 0; i < this.components.length; i++) {
     this.components[i]._setMregl(this._mregl)
   }
