@@ -1,6 +1,7 @@
-var Nano = require('nanocomponent')
+var Nano = require('cache-component')
 var defregl = require('deferred-regl')
 var mregl = require('./multi.js')
+var onload = require('on-load')
 
 module.exports = Root
 
@@ -21,8 +22,12 @@ Root.prototype.create = function () {
 }
 
 Root.prototype._render = function () {
+  var self = this
   if (!this.element) {
     this.element = document.createElement('canvas')
+    onload(this.element,
+      function () { self._load() },
+      function () { self._unload() })
   }
   return this.element
 }
@@ -53,6 +58,9 @@ function Component (opts) {
   self._elheight = null
   self._opts = opts
   self.element = document.createElement('div')
+  onload(self.element,
+    function () { self._load() },
+    function () { self._unload() })
   self.element.style.display = 'inline-block'
   if (opts.width) {
     self.element.style.width = opts.width + 'px'
@@ -91,15 +99,15 @@ Component.prototype._update = function (props) {
     || this._elheight !== props.height
 }
 
-Component.prototype._render = function () {
+Component.prototype._render = function (props) {
   var self = this
-  if (this.props.width !== this._elwidth) {
-    this.element.style.width = this.props.width + 'px'
-    this._elwidth = this.props.width
+  if (props.width !== this._elwidth) {
+    this.element.style.width = props.width + 'px'
+    this._elwidth = props.width
   }
-  if (this.props.height !== this._elheight) {
-    this.element.style.height = this.props.height + 'px'
-    this._elheight = this.props.height
+  if (props.height !== this._elheight) {
+    this.element.style.height = props.height + 'px'
+    this._elheight = props.height
   }
   return this.element
 }

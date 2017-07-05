@@ -3,8 +3,8 @@
   "version": "1.2.2",
   "description": "element wrapper to manage multiple regl contexts",
   "dependencies": {
-    "deferred-regl": "^1.0.0",
-    "nanocomponent": "^5.0.1"
+    "cache-component": "^5.2.0",
+    "deferred-regl": "^1.0.0"
   },
   "devDependencies": {
     "angle-normals": "^1.0.0",
