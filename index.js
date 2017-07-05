@@ -24,7 +24,9 @@ Root.prototype.create = function () {
 Root.prototype._render = function () {
   var self = this
   if (!this.element) {
-    this.element = document.createElement('canvas')
+    this.element = document.createElement('div')
+    this.canvas = document.createElement('canvas')
+    this.element.appendChild(this.canvas)
     onload(this.element,
       function () { self._load() },
       function () { self._unload() })
@@ -35,7 +37,7 @@ Root.prototype._render = function () {
 Root.prototype._update = function () { return false }
 
 Root.prototype._load = function () {
-  this._mregl = mregl(this._regl, this.element, this._opts)
+  this._mregl = mregl(this._regl, this.canvas, this._opts)
   for (var i = 0; i < this.components.length; i++) {
     this.components[i]._setMregl(this._mregl)
   }
@@ -43,6 +45,8 @@ Root.prototype._load = function () {
 
 Root.prototype._unload = function () {
   this._mregl.destroy()
+  this.element = null
+  this.canvas = null
   for (var i = 0; i < this.components.length; i++) {
     this.components[i]._setMregl(null)
   }
