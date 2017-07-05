@@ -92,6 +92,7 @@ Component.prototype._update = function (props) {
 }
 
 Component.prototype._render = function () {
+  var self = this
   if (this.props.width !== this._elwidth) {
     this.element.style.width = this.props.width + 'px'
     this._elwidth = this.props.width

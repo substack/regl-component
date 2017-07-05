@@ -66,8 +66,7 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
     var subcontext = {
       tick: 0,
       element: element,
-      callbacks: [],
-      once: []
+      callbacks: []
     }
 
     subcontexts.push(subcontext)
@@ -78,7 +77,7 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
 
     var scheduled = false
     function schedule (cb) {
-      subcontext.once.push(cb)
+      subcontext.callbacks.push(cb)
       if (!scheduled) {
         scheduled = true
         if (window.requestIdleCallback) {
@@ -120,6 +119,7 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
       if (option === 'clear') {
         subREGL.clear = function () {
           if (setRAF) return regl[option].apply(this, arguments)
+          subcontext.callbacks = []
           var args = arguments
           schedule(function () {
             regl[option].apply(null, args)
@@ -172,11 +172,6 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
     for (var i = 0; i < callbacks.length; ++i) {
       callbacks[i](context)
     }
-    var once = props.subcontext.once
-    for (var i = 0; i < once.length; ++i) {
-      once[i](context)
-    }
-    props.subcontext.once = []
   }
 
   var setRAF = false

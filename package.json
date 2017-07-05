@@ -15,5 +15,5 @@
   "scripts": {
     "example-dist": "browserify example/main.js | babel | uglifyjs -cm 2>/dev/null | indexhtmlify"
   },
-  "license" : "BSD"
+  "license": "BSD"
 }
