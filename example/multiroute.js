@@ -6,24 +6,32 @@ var anormals = require('angle-normals')
 var chart = require('conway-hart')
 var shapes = [ 'mI', 'jT', 'djmeD', 'pO' ]
 var demos = {}
-shapes.forEach(function (shape) {
-  demos[shape] = fromMesh(rcom.create(), chart(shape))
+function getDemo (shape) {
+  if (!demos[shape]) {
+    demos[shape] = fromMesh(rcom.create(), chart(shape))
+  }
+  demos[shape].draw()
+  return demos[shape]
+}
+app.use(function (state, emitter) {
+  emitter.on('pushState', function () { demos = {} })
 })
 
-app.route('#', function (state, emit) {
+app.route('/', function (state, emit) {
   return html`<body>
     ${rcom.render()}
     ${shapes.map(function (shape) {
+      var demo = getDemo(shape)
       return html`<div>
         <h1><a href="#${shape}">${shape}</a></h1>
-        ${demos[shape].render({ width: 400, height: 150 })}
+        ${demo.render({ width: 400, height: 150 })}
         <hr>
       </div>`
     })}
   </body>`
 })
-app.route('#:shape', function (state, emit) {
-  var demo = demos[state.params.shape]
+app.route('/:shape', function (state, emit) {
+  var demo = getDemo(state.params.shape)
   if (!demo) return html`<body>not found</body>`
   return html`<body>
     ${rcom.render()}
@@ -65,6 +73,5 @@ function fromMesh (rc, mesh) {
     elements: mesh.cells
   })
   rc.regl.clear({ color: [0,0,0,1], depth: true })
-  draw()
-  return rc
+  return { render: rc.render.bind(rc), draw: draw }
 }
