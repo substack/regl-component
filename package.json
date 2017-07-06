@@ -4,7 +4,8 @@
   "description": "element wrapper to manage multiple regl contexts",
   "dependencies": {
     "cache-component": "^5.2.0",
-    "deferred-regl": "^1.0.0"
+    "deferred-regl": "^1.0.0",
+    "on-load": "^3.2.0"
   },
   "devDependencies": {
     "angle-normals": "^1.0.0",
