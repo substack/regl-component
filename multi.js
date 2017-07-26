@@ -80,10 +80,7 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
       subcontext.callbacks.push(cb)
       if (!scheduled) {
         scheduled = true
-        if (window.requestIdleCallback) {
-          window.requestIdleCallback(draw)
-        }
-        else setTimeout(draw, 0)
+        window.requestAnimationFrame(draw)
       }
       function draw () {
         regl.draw(frame)
@@ -122,7 +119,15 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
           subcontext.callbacks = []
           var args = arguments
           schedule(function () {
-            regl[option].apply(null, args)
+            regl.clear.apply(null, args)
+          })
+        }
+      } else if (option === 'draw') {
+        subREGL.draw = function () {
+          if (setRAF) return regl[option].apply(this, arguments)
+          var args = arguments
+          schedule(function () {
+            regl.draw.apply(null, args)
           })
         }
       } else subREGL[option] = regl[option]
