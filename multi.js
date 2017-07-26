@@ -107,6 +107,7 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
           var args = arguments
           schedule(function () {
             draw.apply(null, args)
+            if (firstFrame) regl.draw(frame)
           })
         }
       } else return draw
@@ -180,7 +181,9 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
   }
 
   var setRAF = false
+  var firstFrame = true
   function frame (context) {
+    firstFrame = false
     regl.clear({
       color: [0, 0, 0, 0]
     })
