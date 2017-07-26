@@ -1,6 +1,6 @@
 {
   "name": "regl-component",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "element wrapper to manage multiple regl contexts",
   "dependencies": {
     "cache-component": "^5.2.0",
