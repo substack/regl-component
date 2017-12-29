@@ -1,5 +1,4 @@
 // copied from multi-regl
-var clearfb = require('./lib/clearfb.js')
 
 module.exports = function createMultiplexor (createREGL, canvas, inputs) {
   var reglInput = {}
@@ -113,7 +112,6 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
       } else return draw
     }
 
-    var clear = null
     Object.keys(regl).forEach(function (option) {
       if (option === 'clear') {
         subREGL.clear = function (opts) {
@@ -121,7 +119,7 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
             if (setRAF) return clear.apply(this,arguments)
             var args = arguments
             schedule(function () {
-              clear.apply(null, args)
+              regl.clear.apply(null, args)
             })
           } else {
             if (setRAF) return regl[option].apply(this, arguments)
@@ -142,7 +140,6 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
         }
       } else subREGL[option] = regl[option]
     })
-    clear = clearfb(subREGL)
 
     subREGL.frame = function subFrame (cb) {
       setRAF = true
