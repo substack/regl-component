@@ -113,7 +113,7 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
       } else return draw
     }
 
-    var clear = clearfb(regl)
+    var clear = null
     Object.keys(regl).forEach(function (option) {
       if (option === 'clear') {
         subREGL.clear = function (opts) {
@@ -142,6 +142,7 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
         }
       } else subREGL[option] = regl[option]
     })
+    clear = clearfb(subREGL)
 
     subREGL.frame = function subFrame (cb) {
       setRAF = true
