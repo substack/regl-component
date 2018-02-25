@@ -1,5 +1,5 @@
 var Nano = require('nanocomponent')
-var defregl = require('deferred-regl')
+var nanobus = require('nanobus')
 var mregl = require('./multi.js')
 
 module.exports = Root
@@ -54,6 +54,10 @@ function Component (opts) {
   if (!(self instanceof Component)) return new Component(opts)
   Nano.call(self)
   if (!opts) opts = {}
+  self._name = 'nanobus'
+  self._listeners = {}
+  self._starListeners = []
+
   self._elwidth = null
   self._elheight = null
   self._opts = opts
@@ -67,12 +71,22 @@ function Component (opts) {
     self._element.style.height = opts.height + 'px'
     self._elheight = opts.height
   }
-  self.regl = defregl()
   self._regl = null
   self._mregl = null
   self._mreglqueue = []
 }
 Component.prototype = Object.create(Nano.prototype)
+
+Component.prototype.emit = nanobus.prototype.emit
+Component.prototype._emit = nanobus.prototype._emit
+Component.prototype.on = nanobus.prototype.on
+Component.prototype.addListener = nanobus.prototype.addListener
+Component.prototype.prependListener = nanobus.prototype.prependListener
+Component.prototype.once = nanobus.prototype.once
+Component.prototype.prependOnceListener = nanobus.prototype.prependOnceListener
+Component.prototype.removeListener = nanobus.prototype.removeListener
+Component.prototype.removeAllListeners = nanobus.prototype.removeAllListeners
+Component.prototype.listeners = nanobus.prototype.listeners
 
 Component.prototype._getMregl = function (fn) {
   if (this._mregl) fn(this._mregl)
@@ -114,7 +128,7 @@ Component.prototype.load = function () {
   if (self._regl) return
   self._getMregl(function (mregl) {
     self._regl = mregl(self._element)
-    self.regl.setRegl(self._regl)
+    self.emit('regl', self._regl)
   })
 }
 
@@ -122,6 +136,5 @@ Component.prototype.unload = function () {
   if (this._regl) {
     this._regl.destroy()
     this._regl = null
-    this.regl.setRegl(null)
   }
 }

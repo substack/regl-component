@@ -43,35 +43,39 @@ app.route('/:shape', function (state, emit) {
 app.mount('body')
 
 function fromMesh (rc, mesh) {
-  var draw = rc.regl({
-    frag: `
-      precision highp float;
-      varying vec3 vnorm;
-      void main () {
-        gl_FragColor = vec4(vnorm*0.5+0.5,1);
-      }
-    `,
-    vert: `
-      precision highp float;
-      attribute vec3 position, normal;
-      varying vec3 vnorm;
-      uniform float aspect;
-      void main () {
-        vnorm = normal;
-        gl_Position = vec4(position.xy*vec2(1,aspect)*0.3,position.z*0.1+0.1,1);
-      }
-    `,
-    uniforms: {
-      aspect: function (context) {
-        return context.viewportWidth / context.viewportHeight
-      }
-    },
-    attributes: {
-      position: mesh.positions,
-      normal: anormals(mesh.cells, mesh.positions)
-    },
-    elements: mesh.cells
+  var draw = function () {}
+  rc.on('regl', function (regl) {
+    draw = regl({
+      frag: `
+        precision highp float;
+        varying vec3 vnorm;
+        void main () {
+          gl_FragColor = vec4(vnorm*0.5+0.5,1);
+        }
+      `,
+      vert: `
+        precision highp float;
+        attribute vec3 position, normal;
+        varying vec3 vnorm;
+        uniform float aspect;
+        void main () {
+          vnorm = normal;
+          gl_Position = vec4(position.xy*vec2(1,aspect)*0.3,position.z*0.1+0.1,1);
+        }
+      `,
+      uniforms: {
+        aspect: function (context) {
+          return context.viewportWidth / context.viewportHeight
+        }
+      },
+      attributes: {
+        position: mesh.positions,
+        normal: anormals(mesh.cells, mesh.positions)
+      },
+      elements: mesh.cells
+    })
+    regl.clear({ color: [0,0,0,1], depth: true })
+    draw()
   })
-  rc.regl.clear({ color: [0,0,0,1], depth: true })
   return { render: rc.render.bind(rc), draw: draw }
 }

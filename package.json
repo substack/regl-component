@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "element wrapper to manage multiple regl contexts",
   "dependencies": {
-    "deferred-regl": "^1.0.0",
+    "nanobus": "^4.3.3",
     "nanocomponent": "^6.5.0"
   },
   "devDependencies": {
