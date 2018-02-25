@@ -1,6 +1,6 @@
 {
   "name": "regl-component",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "element wrapper to manage multiple regl contexts",
   "dependencies": {
     "nanobus": "^4.3.3",
