@@ -75,17 +75,13 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
       return boxDesc
     }
 
-    var scheduled = false
+    var drawing = false
+    window.requestAnimationFrame(function () {
+      regl.draw(frame)
+    })
     function schedule (cb) {
       subcontext.callbacks.push(cb)
-      if (!scheduled) {
-        scheduled = true
-        window.requestAnimationFrame(draw)
-      }
-      function draw () {
-        regl.draw(frame)
-        scheduled = false
-      }
+      cb()
     }
 
     function subREGL (options) {
@@ -115,20 +111,12 @@ module.exports = function createMultiplexor (createREGL, canvas, inputs) {
     Object.keys(regl).forEach(function (option) {
       if (option === 'clear') {
         subREGL.clear = function (opts) {
-          if (opts && opts.framebuffer) {
-            if (setRAF) return clear.apply(this,arguments)
-            var args = arguments
-            schedule(function () {
-              regl.clear.apply(null, args)
-            })
-          } else {
-            if (setRAF) return regl[option].apply(this, arguments)
-            subcontext.callbacks = []
-            var args = arguments
-            schedule(function () {
-              regl.clear.apply(null, args)
-            })
-          }
+          if (setRAF) return regl[option].apply(this, arguments)
+          subcontext.callbacks = []
+          var args = arguments
+          schedule(function () {
+            regl.clear.apply(null, args)
+          })
         }
       } else if (option === 'draw') {
         subREGL.draw = function () {
